@@ -9,16 +9,26 @@
   tags:
     - vault
 
-# - debug: var=preexisting
-
 - block:
 
-  - name: download vault
-    get_url:
-      url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_arm.zip"
-      dest: /tmp/vault.zip
+  - name: download vault (local)
+    run_once: true
+    become: no
+    local_action:
+      module: get_url
+      url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_arm64.zip"
+      dest: downloads/vault.zip
       mode: 0777
       checksum: "{{ vault_checksum }}"
+    tags:
+      - vault
+
+  - name: push vault zip
+    copy:
+      src: downloads/vault.zip
+      dest: /tmp/vault.zip
+      mode: 0777
+      #checksum: "{{ vault_checksum }}"
     tags:
       - vault
 
@@ -66,7 +76,6 @@
       src: vault.service
       dest: "{{ systemd_dir }}/vault.service"
       mode: 644
-    notify: reload systemd
     tags:
       - vault
 
@@ -92,6 +101,7 @@
       name: vault
       enabled: yes
       state: started
+      daemon_reload: yes
     tags:
       - vault
 

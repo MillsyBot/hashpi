@@ -1,2 +1,4 @@
 .DS_Store
-vault.keys
+.idea
+.idea/*
+downloads/*.zip

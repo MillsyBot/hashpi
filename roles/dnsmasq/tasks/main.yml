@@ -1,27 +1,36 @@
 ---
 - name: install packages (redhat)
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: latest
-  with_items:
-    - dnsmasq
-    - bind-utils
-    - NetworkManager
+  vars:
+    packages:
+      - dnsmasq
+      - bind-utils
+      - NetworkManager
   tags:
     - dnsmasq
     - bootstrap
   when: ansible_distribution == 'RedHat'
 
+- name: disable named
+  service:
+    state: stopped
+    enabled: false
+    name: systemd-resolved
+  when: ansible_distribution in ['Ubuntu']
+
 - name: install packages (debian)
   apt:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: latest
-  with_items:
-    - dnsmasq
+  vars:
+    packages:
+      - dnsmasq
   tags:
     - dnsmasq
     - bootstrap
-  when: ansible_distribution == 'Debian'
+  when: ansible_distribution in ['Debian', 'Ubuntu']
 
 - name: ensure dnsmasq.d directory exists
   file:
@@ -65,7 +74,7 @@
     src: etc/dhcp/dhclient.conf.j2
   tags:
     - dnsmasq
-  when: ansible_distribution == 'Debian'
+  when: ansible_distribution in ['Debian', 'Ubuntu']
 
 #supersede domain-name
 #prepend domain-name-servers
@@ -78,12 +87,6 @@
   tags:
     - dnsmasq
 
-- name: set appropriate hostname
-  hostname:
-    name: "{{ hostname }}"
-  tags:
-    - dnsmasq
-
 - name: update hosts file
   template:
     src: etc/hosts.j2
@@ -91,5 +94,11 @@
     owner: root
     group: root
     mode: 0644
+  tags:
+    - dnsmasq
+
+- name: set appropriate hostname
+  hostname:
+    name: "{{ hostname }}"
   tags:
     - dnsmasq

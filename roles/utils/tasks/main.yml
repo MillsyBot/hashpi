@@ -8,11 +8,14 @@
     - utils
 
 - apt:
-    name: htop
+    name: "{{ packages }}"
     update_cache: yes
-  with_items:
-    - htop
-    - dnsutils
-    - telnet
+  vars:
+    packages:
+      - htop
+      - dnsutils
+      - telnet
+      - net-tools
+      - unzip
   tags:
     - utils

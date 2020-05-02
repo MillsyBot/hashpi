@@ -1,6 +1,6 @@
 ---
-nomad_version: "0.5.0"
-nomad_checksum: "sha256:c85d3ddac0dbb9ed594eabada29daa2bf26619d24f304587c9d7e775c99ad6f6"
+nomad_version: "0.11.1"
+nomad_checksum: "sha256:97e3f3a8ead2c32919ad4d7912713805cb79a39d3ba7932125be5bbb2e9ebd21"
 nomad_install_path: /usr/local/consul
 nomad_dc: dc1
 nomad_is_server: no

@@ -2,7 +2,7 @@
 ---
 - hosts: bramble
   gather_facts: true
-  remote_user: pi
+  remote_user: ubuntu
   become: yes
   become_user: root
   roles:
@@ -15,7 +15,7 @@
 - name: setup the consul servers
   hosts: consul
   gather_facts: true
-  remote_user: pi
+  remote_user: ubuntu
   roles:
     - { role: consul, consul_is_server: yes }
   tags:
@@ -25,7 +25,7 @@
 - name: setup the baron
   hosts: baron
   gather_facts: true
-  remote_user: pi
+  remote_user: ubuntu
   roles:
     - { role: vault, vault_datacenter: alpha }
     - { role: nomad, nomad_is_server: yes, nomad_dc: alpha }
@@ -41,7 +41,7 @@
 - name: setup the folowers
   hosts: followers
   gather_facts: true
-  remote_user: pi
+  remote_user: ubuntu
   roles:
     - consul
     - { role: nomad, nomad_dc: alpha }

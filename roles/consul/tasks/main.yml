@@ -8,16 +8,26 @@
   tags:
     - consul
 
-# - debug: var=preexisting
-
 - block:
 
-  - name: download consul
-    get_url:
-      url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_arm.zip"
-      dest: /tmp/consul.zip
+  - name: download consul (local)
+    run_once: true
+    become: no
+    local_action:
+      module: get_url
+      url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_arm64.zip"
+      dest: downloads/consul.zip
       mode: 0777
       checksum: "{{ consul_checksum }}"
+    tags:
+      - consul
+
+  - name: push nomad file to hosts
+    copy:
+      src: downloads/nomad.zip
+      dest: /tmp/nomad.zip
+      mode: 0777
+      #checksum: "{{ consul_checksum }}"
     tags:
       - consul
 
@@ -48,21 +58,21 @@
     tags:
       - consul
 
-  - name: get consul-ui
-    get_url:
-      url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_web_ui.zip"
-      dest: /tmp/consul_web_ui.zip
-    tags:
-      - consul
-
-  - name: extract consul-ui
-    unarchive:
-      src: /tmp/consul_web_ui.zip
-      dest: /usr/share/consul-ui
-      copy: no
-      creates: /usr/share/consul-ui/index.html
-    tags:
-      - consul
+#  - name: get consul-ui
+#    get_url:
+#      url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_web_ui.zip"
+#      dest: /tmp/consul_web_ui.zip
+#    tags:
+#      - consul
+#
+#  - name: extract consul-ui
+#    unarchive:
+#      src: /tmp/consul_web_ui.zip
+#      dest: /usr/share/consul-ui
+#      copy: no
+#      creates: /usr/share/consul-ui/index.html
+#    tags:
+#      - consul
 
   - name: remove the temp archives
     file:
@@ -70,7 +80,7 @@
       state: absent
     with_items:
       - /tmp/consul.zip
-      - /tmp/consul_web_ui.zip
+#      - /tmp/consul_web_ui.zip
     tags:
       - consul
 
@@ -119,7 +129,7 @@
       dest: "{{ systemd_dir }}/consul.service"
       mode: 644
     notify:
-      - reload systemd
+      - restart consul
     tags:
       - consul
 

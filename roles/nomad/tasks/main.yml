@@ -10,12 +10,24 @@
 
 - block:
 
-  - name: download nomad
-    get_url:
-      url: "https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_linux_arm.zip"
-      dest: /tmp/nomad.zip
+  - name: download nomad (local)
+    run_once: true
+    become: no
+    local_action:
+      module: get_url
+      url: "https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_linux_arm64.zip"
+      dest: downloads/nomad.zip
       mode: 0777
       checksum: "{{ nomad_checksum }}"
+    tags:
+      - nomad
+
+  - name: push nomad file to hosts
+    copy:
+      src: downloads/nomad.zip
+      dest: /tmp/nomad.zip
+      mode: 0777
+      #checksum: "{{ nomad_checksum }}"
     tags:
       - nomad
 

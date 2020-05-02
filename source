@@ -1,0 +1,2 @@
+export ANSIBLE_CONFIG=/Users/amills/git/hashpi/ansible.cfg
+export ANSIBLE_INVENTORY=/Users/amills/git/hashpi/inventory.ini
